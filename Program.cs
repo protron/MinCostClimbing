@@ -2,6 +2,7 @@
 using System.Text.Json;
 
 var solution = new Solution();
+var summary = (successes: 0, failures: 0);
 var testCases = File.ReadAllLines("TestCases.jsonl");
 var expectedResults = File.ReadAllLines("ExpectedResults.txt");
 var items = Enumerable.Range(0, testCases.Length).Zip(testCases, expectedResults);
@@ -13,8 +14,22 @@ foreach (var item in items) {
     Debug.Assert(input is not null);
     int actual = solution.MinCostClimbingStairs(input);
     if (expected != actual) {
-        Console.WriteLine($"ERROR at line {index}: expected {expected} but actually got {actual}. TestCase: {testCase}");
+        Write(ConsoleColor.Red, $"ERROR at line {index}: expected {expected} but actually got {actual}. TestCase: {testCase}");
+        summary.failures += 1;
     } else {
-        Console.WriteLine($"Line {index}: TestCase: {testCase} returned expected {expected}.");
+        Write(ConsoleColor.Green, $"Line {index}: TestCase: {testCase} returned expected {expected}.");
+        summary.successes += 1;
     }
+}
+Write(ConsoleColor.Gray, $"--- Summary ---");
+Write(ConsoleColor.Green, $"Successes: {summary.successes}");
+if (summary.failures > 0) {
+    Write(ConsoleColor.Red, $"Failures: {summary.failures}");
+} else {
+    Write(ConsoleColor.Gray, $"Failures: {summary.failures}");
+}
+
+void Write(ConsoleColor color, string s) {
+    Console.ForegroundColor = color;
+    Console.WriteLine(s);
 }
