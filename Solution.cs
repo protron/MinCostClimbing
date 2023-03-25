@@ -1,34 +1,42 @@
 public class Solution
 {
-    private int[] input;
-    private int?[] cache;
-
     public int MinCostClimbingStairs(int[] cost)
     {
-        this.input = cost;
-        this.cache = new int?[cost.Length];
-        return Calc(0);
+        var subClass = new SubClass(cost);
+        return subClass.Calc(0);
     }
 
-    public int Calc(int firstIndex)
+    private class SubClass
     {
-        if (cache[firstIndex].HasValue)
+        public int[] input;
+        public int?[] cache;
+
+        public SubClass(int[] input)
         {
-            return cache[firstIndex].Value;
+            this.input = input;
+            this.cache = new int?[input.Length];
         }
-        var missing = input.Length - firstIndex;
-        if (missing < 2)
+
+        public int Calc(int firstIndex)
         {
-            return 0;
+            if (cache[firstIndex] is int cacheItem)
+            {
+                return cacheItem;
+            }
+            var missing = input.Length - firstIndex;
+            if (missing < 2)
+            {
+                return 0;
+            }
+            if (missing == 2)
+            {
+                return Math.Min(input[firstIndex], input[firstIndex + 1]);
+            }
+            var costSingleStep = input[firstIndex] + Calc(firstIndex + 1);
+            var costDoubleStep = input[firstIndex + 1] + Calc(firstIndex + 2);
+            var result = Math.Min(costSingleStep, costDoubleStep);
+            cache[firstIndex] = result;
+            return result;
         }
-        if (missing == 2)
-        {
-            return Math.Min(input[firstIndex], input[firstIndex + 1]);
-        }
-        var costSingleStep = input[firstIndex] + Calc(firstIndex + 1);
-        var costDoubleStep = input[firstIndex + 1] + Calc(firstIndex + 2);
-        var result = Math.Min(costSingleStep, costDoubleStep);
-        cache[firstIndex] = result;
-        return result;
     }
 }
